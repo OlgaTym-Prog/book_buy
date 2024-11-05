@@ -11,6 +11,8 @@ class Publisher(Base):
     id = sq.Column(sq.Integer, primary_key=True)
     name = sq.Column(sq.String(length=50), unique=True)
 
+    books = relationship("Book", back_populates="publisher")
+
 
 class Book(Base):
     __tablename__ = 'book'
@@ -19,9 +21,7 @@ class Book(Base):
     id_publisher = sq.Column(sq.Integer, sq.ForeignKey('publisher.id'), nullable=False)
 
     publisher = relationship('Publisher', back_populates="books")
-
-
-Publisher.books = relationship("Book", order_by=Book.id, back_populates="publisher")
+    stock = relationship('Stock', back_populates="book")
 
 
 class Stock(Base):
@@ -31,8 +31,9 @@ class Stock(Base):
     id_shop = sq.Column(sq.Integer, sq.ForeignKey('shop.id'), nullable=False)
     count = sq.Column(sq.Integer, nullable=False)
 
-    book = relationship('Book')
-    shop = relationship('Shop')
+    book = relationship('Book', back_populates="stock")
+    shop = relationship('Shop', back_populates="stock")
+    sales = relationship('Sale', back_populates="stock")
 
 
 class Sale(Base):
@@ -43,13 +44,15 @@ class Sale(Base):
     id_stock = sq.Column(sq.Integer, sq.ForeignKey('stock.id'), nullable=False)
     count = sq.Column(sq.Integer, nullable=False)
 
-    stock = relationship('Stock')
+    stock = relationship('Stock', back_populates="sales")
 
 
 class Shop(Base):
     __tablename__ = 'shop'
     id = sq.Column(sq.Integer, primary_key=True)
     name = sq.Column(sq.String(length=50), unique=True)
+
+    stock = relationship('Stock', back_populates="shop")
 
 
 # Функция для создания таблиц
